@@ -221,18 +221,6 @@ void TermRenderer()
 	g_removingRenderPathMutex.unlock();
 }
 
-void SetBackGroundTexture(void* backgroundTexture)
-{
-	if (g_graphics != nullptr)
-		g_graphics->SetBackGroundTextureToRenderer(g_EffekseerRenderer.Get(), backgroundTexture);
-}
-
-void SetDepthTexture(const Effekseer::Matrix44& projectionMatrix, void* backgroundTexture)
-{
-	if (g_graphics != nullptr)
-		g_graphics->SetDepthTextureToRenderer(g_EffekseerRenderer.Get(), projectionMatrix, backgroundTexture);
-}
-
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType eventType)
 {
 	switch (eventType)
@@ -451,9 +439,12 @@ extern "C"
 		g_EffekseerRenderer->SetCameraParameter(cameraFrontDirection, cameraPosition);
 
 		// Specify textures
-		SetBackGroundTexture(settings.externalTextures[static_cast<int>(ExternalTextureType::Background)]);
-
-		SetDepthTexture(projectionMatrix, settings.externalTextures[static_cast<int>(ExternalTextureType::Depth)]);
+		if (g_graphics != nullptr)
+		{
+			g_graphics->SetBackGroundTextureToRenderer(g_EffekseerRenderer.Get(),
+													   settings.externalTextures[static_cast<int>(ExternalTextureType::Background)]);
+			g_graphics->SetDepthTextureToRenderer(g_EffekseerRenderer.Get(), projectionMatrix, settings.externalTextures[static_cast<int>(ExternalTextureType::Depth)]);
+		}
 
 		// render
 
@@ -496,8 +487,11 @@ extern "C"
 			g_graphics->SetRenderPath(g_EffekseerRenderer.Get(), nullptr);
 		}
 
-		SetBackGroundTexture(nullptr);
-		SetDepthTexture(projectionMatrix, nullptr);
+		if (g_graphics != nullptr)
+		{
+			g_graphics->SetBackGroundTextureToRenderer(g_EffekseerRenderer.Get(), nullptr);
+			g_graphics->SetDepthTextureToRenderer(g_EffekseerRenderer.Get(), projectionMatrix, nullptr);
+		}
 	}
 
 	UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API EffekseerRenderFront(int renderId)
@@ -566,9 +560,11 @@ extern "C"
 			g_graphics->SetRenderPath(g_EffekseerRenderer.Get(), nullptr);
 		}
 
-		// 背景テクスチャを解除
-		SetBackGroundTexture(nullptr);
-		SetDepthTexture({}, nullptr);
+		if (g_graphics != nullptr)
+		{
+			g_graphics->SetBackGroundTextureToRenderer(g_EffekseerRenderer.Get(), nullptr);
+			g_graphics->SetDepthTextureToRenderer(g_EffekseerRenderer.Get(), projectionMatrix, nullptr);
+		}
 
 		// Viewportを初期化
 		if (settings.stereoRenderingType == StereoRenderingType::SinglePass)
@@ -689,8 +685,12 @@ extern "C"
 		g_EffekseerRenderer->SetCameraParameter(cameraFrontDirection, cameraPosition);
 
 		// Specify textures
-		SetBackGroundTexture(settings.externalTextures[static_cast<int>(ExternalTextureType::Background)]);
-		SetDepthTexture(projectionMatrix, settings.externalTextures[static_cast<int>(ExternalTextureType::Depth)]);
+		if (g_graphics != nullptr)
+		{
+			g_graphics->SetBackGroundTextureToRenderer(g_EffekseerRenderer.Get(),
+													   settings.externalTextures[static_cast<int>(ExternalTextureType::Background)]);
+			g_graphics->SetDepthTextureToRenderer(g_EffekseerRenderer.Get(), projectionMatrix, settings.externalTextures[static_cast<int>(ExternalTextureType::Depth)]);
+		}
 
 		std::shared_ptr<RenderPass> renderPath = nullptr;
 		auto it = g_backRenderPasses.find(renderId);
