@@ -6,6 +6,10 @@
 #include "EffekseerPluginGraphicsDX11.h"
 #endif
 
+#ifdef _DX12
+#include "EffekseerPluginGraphicsDX12.h"
+#endif
+
 #ifdef _PS4
 #include "../PS4/EffekseerPluginGraphicsPS4.h"
 #endif
@@ -56,6 +60,13 @@ Graphics* Graphics::Create(UnityGfxRenderer renderer, bool isUnityRenderer, bool
 #ifdef _XBOXONE_DX12
 	{
 		return new GraphicsXBoxOneDX12();
+	}
+#endif
+
+#ifdef _DX12
+	if (renderer == UnityGfxRenderer::kUnityGfxRendererD3D12)
+	{
+		return new GraphicsDX12();
 	}
 #endif
 
