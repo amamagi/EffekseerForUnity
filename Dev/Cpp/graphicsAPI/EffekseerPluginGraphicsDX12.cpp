@@ -11,6 +11,51 @@
 namespace EffekseerPlugin
 {
 
+bool RenderPassDX12::Initialize(EffekseerRenderer::Renderer* renderer)
+{
+	ES_SAFE_RELEASE(memoryPool_);
+	ES_SAFE_RELEASE(commandList_);
+
+	memoryPool_ = EffekseerRendererDX12::CreateSingleFrameMemoryPool(renderer);
+	commandList_ = EffekseerRendererDX12::CreateCommandList(renderer, memoryPool_);
+	return true;
+}
+
+void RenderPassDX12::Begin(RenderPass* backRenderPass)
+{
+	if (memoryPool_ != nullptr)
+	{
+		memoryPool_->NewFrame();
+	}
+
+	if (commandList_ != nullptr)
+	{
+		EffekseerRendererDX12::BeginCommandList(commandList_);
+	}
+}
+
+void RenderPassDX12::End()
+{
+	if (commandList_ != nullptr)
+	{
+		EffekseerRendererDX12::EndCommandList(commandList_);
+	}
+}
+
+void RenderPassDX12::Execute()
+{
+	if (commandList_ != nullptr)
+	{
+		EffekseerRendererDX12::ExecuteCommandList(commandList_);
+	}
+}
+
+RenderPassDX12::~RenderPassDX12()
+{
+	ES_SAFE_RELEASE(memoryPool_);
+	ES_SAFE_RELEASE(commandList_);
+}
+
 class TextureLoaderDX12 : public TextureLoader
 {
 	std::map<Effekseer::TextureRef, void*> textureData2NativePtr;
@@ -110,14 +155,14 @@ EffekseerRenderer::RendererRef GraphicsDX12::CreateRenderer(int squareMaxCount, 
 	return renderer_;
 }
 
-void GraphicsDX12::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, void* backgroundTexture)
+void GraphicsDX12::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture)
 {
-	((EffekseerRendererDX12::Renderer*)renderer)->SetBackground((ID3D11ShaderResourceView*)backgroundTexture);
+	renderer->SetBackground(backgroundTexture);
 }
 
 void GraphicsDX12::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 											 const Effekseer::Matrix44& projectionMatrix,
-											 void* depthTexture)
+											 Effekseer::TextureRef depthTexture)
 {
 	if (depthTexture == nullptr)
 	{
@@ -133,10 +178,7 @@ void GraphicsDX12::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* render
 	param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
 	param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
 
-	auto srv = static_cast<ID3D11ShaderResourceView*>(depthTexture);
-
-	auto texture = EffekseerRendererDX11::CreateTexture(graphicsDevice_, srv, nullptr, nullptr);
-	renderer->SetDepth(texture, param);
+	renderer->SetDepth(depthTexture, param);
 }
 
 void GraphicsDX12::SetExternalTexture(int renderId, ExternalTextureType type, void* texture)
@@ -226,6 +268,36 @@ Effekseer::MaterialLoaderRef GraphicsDX12::Create(MaterialLoaderLoad load, Mater
 void GraphicsDX12::ShiftViewportForStereoSinglePass(bool isShift)
 {
 	// TODO
+}
+
+RenderPass* GraphicsDX12::CreateRenderPass()
+{
+	auto ret = new RenderPassDX12();
+	ret->Initialize(renderer_);
+	return ret;
+}
+
+void GraphicsDX12::SetRenderPath(EffekseerRenderer::Renderer* renderer, RenderPass* renderPath)
+{
+	if (renderPath != nullptr)
+	{
+		auto rt = static_cast<RenderPassDX12*>(renderPath);
+		renderer_->SetCommandList(rt->GetCommandList());
+	}
+	else
+	{
+		renderer_->SetCommandList(nullptr);
+	}
+}
+
+void GraphicsDX12::WaitFinish()
+{
+	if (renderer_ == nullptr)
+	{
+		return;
+	}
+
+	EffekseerRendererDX12::FlushAndWait(renderer_);
 }
 
 } // namespace EffekseerPlugin

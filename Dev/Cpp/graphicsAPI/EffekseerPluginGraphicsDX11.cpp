@@ -164,7 +164,6 @@ void GraphicsDX11::SetExternalTexture(int renderId, ExternalTextureType type, vo
 
 	if (original != nullptr)
 	{
-		static_cast<EffekseerRendererDX11
 		ID3D11Resource* res = nullptr;
 		srv->GetResource(&res);
 		if (res != texture)

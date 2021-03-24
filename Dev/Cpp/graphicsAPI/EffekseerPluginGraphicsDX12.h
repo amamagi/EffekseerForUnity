@@ -8,6 +8,25 @@
 namespace EffekseerPlugin
 {
 
+class RenderPassDX12 : public RenderPass
+{
+	EffekseerRenderer::CommandList* commandList_ = nullptr;
+	EffekseerRenderer::SingleFrameMemoryPool* memoryPool_ = nullptr;
+
+public:
+	bool Initialize(EffekseerRenderer::Renderer* renderer);
+
+	virtual ~RenderPassDX12();
+
+	void Begin(RenderPass* backRenderPass) override;
+
+	void End() override;
+
+	void Execute() override;
+
+	EffekseerRenderer::CommandList* GetCommandList() { return commandList_; }
+};
+
 class GraphicsDX12 : public Graphics
 {
 private:
@@ -29,11 +48,11 @@ public:
 
 	EffekseerRenderer::RendererRef CreateRenderer(int squareMaxCount, bool reversedDepth) override;
 
-	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, void* backgroundTexture) override;
+	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture) override;
 
 	void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 								   const Effekseer::Matrix44& projectionMatrix,
-								   void* depthTexture) override;
+								   Effekseer::TextureRef depthTexture) override;
 
 	void SetExternalTexture(int renderId, ExternalTextureType type, void* texture) override;
 
@@ -44,6 +63,12 @@ public:
 	Effekseer::MaterialLoaderRef Create(MaterialLoaderLoad load, MaterialLoaderUnload unload) override;
 
 	void ShiftViewportForStereoSinglePass(bool isShift) override;
+
+	RenderPass* CreateRenderPass() override;
+
+	void SetRenderPath(EffekseerRenderer::Renderer* renderer, RenderPass* renderPath) override;
+
+	void WaitFinish() override;
 };
 
 } // namespace EffekseerPlugin

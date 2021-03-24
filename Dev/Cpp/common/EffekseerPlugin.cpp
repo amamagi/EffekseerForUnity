@@ -187,17 +187,6 @@ void TermRenderer()
 #ifdef _WIN32
 	for (int i = 0; i < MAX_RENDER_PATH; i++)
 	{
-		if (g_UnityRendererType == kUnityGfxRendererD3D11)
-		{
-			for (size_t j = 0; j < renderSettings[i].externalTextures.size(); j++)
-			{
-				if (renderSettings[i].externalTextures[j])
-				{
-					((ID3D11ShaderResourceView*)renderSettings[i].externalTextures[j])->Release();
-				}
-			}
-		}
-
 		for (size_t j = 0; j < renderSettings[i].externalTextures.size(); j++)
 		{
 			renderSettings[i].externalTextures[j] = nullptr;

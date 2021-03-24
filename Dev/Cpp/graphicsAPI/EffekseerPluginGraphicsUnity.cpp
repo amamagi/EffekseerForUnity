@@ -33,14 +33,14 @@ Effekseer::RefPtr<EffekseerRenderer::Renderer> GraphicsUnity::CreateRenderer(int
 	}
 }
 
-void GraphicsUnity::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, void* backgroundTexture)
+void GraphicsUnity::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture)
 {
-	((EffekseerRendererUnity::RendererImplemented*)renderer)->SetBackground(backgroundTexture);
+	renderer->SetBackground(backgroundTexture);
 }
 
 void GraphicsUnity::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-										   const Effekseer::Matrix44& projectionMatrix,
-										   void* depthTexture)
+											  const Effekseer::Matrix44& projectionMatrix,
+											  Effekseer::TextureRef depthTexture)
 {
 	if (depthTexture == nullptr)
 	{
@@ -56,12 +56,19 @@ void GraphicsUnity::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* rende
 	param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
 	param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
 
-	renderer->SetDepth(Effekseer::MakeRefPtr<EffekseerRendererUnity::Texture>(depthTexture), param);
+	renderer->SetDepth(depthTexture, param);
 }
 
 void GraphicsUnity::SetExternalTexture(int renderId, ExternalTextureType type, void* texture)
 {
-	renderSettings[renderId].externalTextures[static_cast<int>(type)] = texture;
+	if (texture != nullptr)
+	{
+		renderSettings[renderId].externalTextures[static_cast<int>(type)] = Effekseer::MakeRefPtr<EffekseerRendererUnity::Texture>(texture);
+	}
+	else
+	{
+		renderSettings[renderId].externalTextures[static_cast<int>(type)].Reset();
+	}
 }
 
 Effekseer::TextureLoaderRef GraphicsUnity::Create(TextureLoaderLoad load, TextureLoaderUnload unload)
@@ -80,7 +87,7 @@ Effekseer::MaterialLoaderRef GraphicsUnity::Create(MaterialLoaderLoad load, Mate
 }
 
 Effekseer::ProceduralModelGeneratorRef GraphicsUnity::Create(ProceduralModelGeneratorGenerate generate,
-															ProceduralModelGeneratorUngenerate ungenerate)
+															 ProceduralModelGeneratorUngenerate ungenerate)
 {
 	return Effekseer::MakeRefPtr<EffekseerRendererUnity::ProceduralModelGenerator>(generate, ungenerate);
 }
