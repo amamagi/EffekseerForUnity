@@ -126,14 +126,14 @@ EffekseerRenderer::RendererRef GraphicsGL::CreateRenderer(int squareMaxCount, bo
 	return renderer;
 }
 
-void GraphicsGL::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture)
+void GraphicsGL::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
 {
 	renderer->SetBackground(backgroundTexture);
 }
 
 void GraphicsGL::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 										   const Effekseer::Matrix44& projectionMatrix,
-										   Effekseer::TextureRef depthTexture)
+										   Effekseer::Backend::TextureRef depthTexture)
 {
 	if (depthTexture == nullptr)
 	{

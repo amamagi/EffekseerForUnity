@@ -51,11 +51,11 @@ public:
 
 	virtual Effekseer::RefPtr<EffekseerRenderer::Renderer> CreateRenderer(int squareMaxCount, bool reversedDepth) = 0;
 
-	virtual void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture) = 0;
+	virtual void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture) = 0;
 
 	virtual void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 										   const Effekseer::Matrix44& projectionMatrix,
-										   Effekseer::TextureRef depthTexture)
+										   Effekseer::Backend::TextureRef depthTexture)
 	{
 	}
 

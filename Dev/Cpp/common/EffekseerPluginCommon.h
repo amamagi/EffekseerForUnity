@@ -49,7 +49,7 @@ struct RenderSettings
 	Effekseer::Matrix44 cameraMatrix;
 	Effekseer::Matrix44 projectionMatrix;
 	bool renderIntoTexture = false;
-	std::array<Effekseer::TextureRef, static_cast<int>(ExternalTextureType::Max)> externalTextures;
+	std::array<Effekseer::Backend::TextureRef, static_cast<int>(ExternalTextureType::Max)> externalTextures;
 
 	bool stereoEnabled = false;
 	int stereoRenderCount = 1;

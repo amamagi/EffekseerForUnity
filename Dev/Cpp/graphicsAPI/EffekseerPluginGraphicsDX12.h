@@ -10,11 +10,12 @@ namespace EffekseerPlugin
 
 class RenderPassDX12 : public RenderPass
 {
-	EffekseerRenderer::CommandList* commandList_ = nullptr;
-	EffekseerRenderer::SingleFrameMemoryPool* memoryPool_ = nullptr;
+	IUnityInterfaces* unityInterface_ = nullptr;
+	Effekseer::RefPtr<EffekseerRenderer::CommandList> commandList_ = nullptr;
+	Effekseer::RefPtr<EffekseerRenderer::SingleFrameMemoryPool> memoryPool_ = nullptr;
 
 public:
-	bool Initialize(EffekseerRenderer::Renderer* renderer);
+	bool Initialize(IUnityInterfaces* unityInterface, Effekseer::Backend::GraphicsDeviceRef device);
 
 	virtual ~RenderPassDX12();
 
@@ -24,7 +25,7 @@ public:
 
 	void Execute() override;
 
-	EffekseerRenderer::CommandList* GetCommandList() { return commandList_; }
+	Effekseer::RefPtr<EffekseerRenderer::CommandList> GetCommandList() { return commandList_; }
 };
 
 class GraphicsDX12 : public Graphics
@@ -34,6 +35,7 @@ private:
 	ID3D12CommandQueue* commandQueue_ = nullptr;
 	Effekseer::Backend::GraphicsDeviceRef graphicsDevice_ = nullptr;
 	Effekseer::RefPtr<EffekseerRenderer::Renderer> renderer_ = nullptr;
+	IUnityInterfaces* unityInterface_ = nullptr;
 
 public:
 	GraphicsDX12();
@@ -48,11 +50,11 @@ public:
 
 	EffekseerRenderer::RendererRef CreateRenderer(int squareMaxCount, bool reversedDepth) override;
 
-	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture) override;
+	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture) override;
 
 	void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 								   const Effekseer::Matrix44& projectionMatrix,
-								   Effekseer::TextureRef depthTexture) override;
+								   Effekseer::Backend::TextureRef depthTexture) override;
 
 	void SetExternalTexture(int renderId, ExternalTextureType type, void* texture) override;
 

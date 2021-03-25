@@ -1,11 +1,15 @@
-﻿project(EffekseerUnity  LANGUAGES C CXX)
+﻿cmake_minimum_required(VERSION 3.18)
+
+if (WIN32)
+    cmake_policy(SET CMP0091 NEW)
+endif()
+
+project(EffekseerUnity  LANGUAGES C CXX)
 
 include(ExternalProject)
-cmake_minimum_required(VERSION 3.15)
 
 # Flags
 if (WIN32)
-    cmake_policy(SET CMP0091 NEW)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
@@ -15,7 +19,7 @@ ExternalProject_Add(
     PREFIX          ${CMAKE_CURRENT_BINARY_DIR}/Build/Effekseer
     INSTALL_DIR     ${CMAKE_CURRENT_BINARY_DIR}/Install/Effekseer
     CMAKE_ARGS      -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/Install/Effekseer
-                    -DEFK_USE_MSVC_RUNTIME_LIBRARY_DLL=${USE_MSVC_RUNTIME_LIBRARY_DLL}
+                    -DEFK_USE_MSVC_RUNTIME_LIBRARY_DLL=false
                     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=true
                     -DBUILD_VIEWER:BOOL=OFF
                     -DBUILD_EXAMPLES:BOOL=OFF

@@ -33,14 +33,14 @@ Effekseer::RefPtr<EffekseerRenderer::Renderer> GraphicsUnity::CreateRenderer(int
 	}
 }
 
-void GraphicsUnity::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::TextureRef backgroundTexture)
+void GraphicsUnity::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
 {
 	renderer->SetBackground(backgroundTexture);
 }
 
 void GraphicsUnity::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
 											  const Effekseer::Matrix44& projectionMatrix,
-											  Effekseer::TextureRef depthTexture)
+											  Effekseer::Backend::TextureRef depthTexture)
 {
 	if (depthTexture == nullptr)
 	{
