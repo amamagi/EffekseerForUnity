@@ -51,12 +51,30 @@ public:
 
 	virtual Effekseer::RefPtr<EffekseerRenderer::Renderer> CreateRenderer(int squareMaxCount, bool reversedDepth) = 0;
 
-	virtual void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture) = 0;
-
-	virtual void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-										   const Effekseer::Matrix44& projectionMatrix,
-										   Effekseer::Backend::TextureRef depthTexture)
+	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
 	{
+		renderer->SetBackground(backgroundTexture);
+	}
+
+	void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
+								   const Effekseer::Matrix44& projectionMatrix,
+								   Effekseer::Backend::TextureRef depthTexture)
+	{
+		if (depthTexture == nullptr)
+		{
+			renderer->SetDepth(nullptr, EffekseerRenderer::DepthReconstructionParameter{});
+			return;
+		}
+
+		EffekseerRenderer::DepthReconstructionParameter param;
+		param.DepthBufferScale = 1.0f;
+		param.DepthBufferOffset = 0.0f;
+		param.ProjectionMatrix33 = projectionMatrix.Values[2][2];
+		param.ProjectionMatrix43 = projectionMatrix.Values[2][3];
+		param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
+		param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
+
+		renderer->SetDepth(depthTexture, param);
 	}
 
 	virtual void SetExternalTexture(int renderId, ExternalTextureType type, void* texture) = 0;
@@ -68,7 +86,7 @@ public:
 	virtual Effekseer::MaterialLoaderRef Create(MaterialLoaderLoad load, MaterialLoaderUnload unload) { return nullptr; }
 
 	virtual Effekseer::ProceduralModelGeneratorRef Create(ProceduralModelGeneratorGenerate generate,
-														 ProceduralModelGeneratorUngenerate ungenerate)
+														  ProceduralModelGeneratorUngenerate ungenerate)
 	{
 		return nullptr;
 	}

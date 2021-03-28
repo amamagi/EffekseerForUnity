@@ -17,7 +17,7 @@ class RenderPassDX12 : public RenderPass
 public:
 	bool Initialize(IUnityInterfaces* unityInterface, Effekseer::Backend::GraphicsDeviceRef device);
 
-	virtual ~RenderPassDX12();
+	virtual ~RenderPassDX12() override = default;
 
 	void Begin(RenderPass* backRenderPass) override;
 
@@ -49,12 +49,6 @@ public:
 	void Shutdown(IUnityInterfaces* unityInterface) override;
 
 	EffekseerRenderer::RendererRef CreateRenderer(int squareMaxCount, bool reversedDepth) override;
-
-	void SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture) override;
-
-	void SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-								   const Effekseer::Matrix44& projectionMatrix,
-								   Effekseer::Backend::TextureRef depthTexture) override;
 
 	void SetExternalTexture(int renderId, ExternalTextureType type, void* texture) override;
 

@@ -33,32 +33,6 @@ Effekseer::RefPtr<EffekseerRenderer::Renderer> GraphicsUnity::CreateRenderer(int
 	}
 }
 
-void GraphicsUnity::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
-{
-	renderer->SetBackground(backgroundTexture);
-}
-
-void GraphicsUnity::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-											  const Effekseer::Matrix44& projectionMatrix,
-											  Effekseer::Backend::TextureRef depthTexture)
-{
-	if (depthTexture == nullptr)
-	{
-		renderer->SetDepth(nullptr, EffekseerRenderer::DepthReconstructionParameter{});
-		return;
-	}
-
-	EffekseerRenderer::DepthReconstructionParameter param;
-	param.DepthBufferScale = 1.0f;
-	param.DepthBufferOffset = 0.0f;
-	param.ProjectionMatrix33 = projectionMatrix.Values[2][2];
-	param.ProjectionMatrix43 = projectionMatrix.Values[2][3];
-	param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
-	param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
-
-	renderer->SetDepth(depthTexture, param);
-}
-
 void GraphicsUnity::SetExternalTexture(int renderId, ExternalTextureType type, void* texture)
 {
 	if (texture != nullptr)

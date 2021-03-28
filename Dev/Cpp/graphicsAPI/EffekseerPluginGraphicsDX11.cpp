@@ -126,32 +126,6 @@ EffekseerRenderer::RendererRef GraphicsDX11::CreateRenderer(int squareMaxCount, 
 	return renderer;
 }
 
-void GraphicsDX11::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
-{
-	renderer->SetBackground(backgroundTexture);
-}
-
-void GraphicsDX11::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-											 const Effekseer::Matrix44& projectionMatrix,
-											 Effekseer::Backend::TextureRef depthTexture)
-{
-	if (depthTexture == nullptr)
-	{
-		renderer->SetDepth(nullptr, EffekseerRenderer::DepthReconstructionParameter{});
-		return;
-	}
-
-	EffekseerRenderer::DepthReconstructionParameter param;
-	param.DepthBufferScale = 1.0f;
-	param.DepthBufferOffset = 0.0f;
-	param.ProjectionMatrix33 = projectionMatrix.Values[2][2];
-	param.ProjectionMatrix43 = projectionMatrix.Values[2][3];
-	param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
-	param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
-
-	renderer->SetDepth(depthTexture, param);
-}
-
 void GraphicsDX11::SetExternalTexture(int renderId, ExternalTextureType type, void* texture)
 {
 	auto original = renderSettings[renderId].externalTextures[static_cast<int>(type)];

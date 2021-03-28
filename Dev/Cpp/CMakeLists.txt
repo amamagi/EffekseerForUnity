@@ -72,7 +72,6 @@ if(WIN32)
     target_link_libraries(EffekseerUnity PRIVATE
         Effekseer
         EffekseerRendererGL
-        EffekseerRendererDX9
         EffekseerRendererDX11)
 
     target_compile_definitions(EffekseerUnity PRIVATE __EFFEKSEER_FROM_MAIN_CMAKE__)
@@ -83,12 +82,16 @@ if(WIN32)
 
     add_library(EffekseerUnityDX12 SHARED
         ${effekseer_src}
+        ${effekseer_gl_src}
+        ${effekseer_dx11_src}
         ${effekseer_dx12_src}
         windows/EffekseerUnity.def
     )
 
     target_link_libraries(EffekseerUnityDX12 PRIVATE
         Effekseer
+        EffekseerRendererGL
+        EffekseerRendererDX11
         EffekseerRendererDX12
         LLGI)
 

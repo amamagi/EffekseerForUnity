@@ -28,8 +28,7 @@ void RenderPassDX12::Begin(RenderPass* backRenderPass)
 
 	if (commandList_ != nullptr)
 	{
-		//unityInterface_->Get<IUnityGraphicsD3D12>()->
-		//EffekseerRendererDX12::BeginCommandList(commandList_);
+		EffekseerRendererDX12::BeginCommandList(commandList_, nullptr);
 	}
 }
 
@@ -45,12 +44,8 @@ void RenderPassDX12::Execute()
 {
 	if (commandList_ != nullptr)
 	{
-		// None?
+		EffekseerRendererDX12::ExecuteCommandList(commandList_);
 	}
-}
-
-RenderPassDX12::~RenderPassDX12()
-{
 }
 
 class TextureLoaderDX12 : public TextureLoader
@@ -151,37 +146,18 @@ EffekseerRenderer::RendererRef GraphicsDX12::CreateRenderer(int squareMaxCount, 
 	return renderer_;
 }
 
-void GraphicsDX12::SetBackGroundTextureToRenderer(EffekseerRenderer::Renderer* renderer, Effekseer::Backend::TextureRef backgroundTexture)
-{
-	renderer->SetBackground(backgroundTexture);
-}
-
-void GraphicsDX12::SetDepthTextureToRenderer(EffekseerRenderer::Renderer* renderer,
-											 const Effekseer::Matrix44& projectionMatrix,
-											 Effekseer::Backend::TextureRef depthTexture)
-{
-	if (depthTexture == nullptr)
-	{
-		renderer->SetDepth(nullptr, EffekseerRenderer::DepthReconstructionParameter{});
-		return;
-	}
-
-	EffekseerRenderer::DepthReconstructionParameter param;
-	param.DepthBufferScale = 1.0f;
-	param.DepthBufferOffset = 0.0f;
-	param.ProjectionMatrix33 = projectionMatrix.Values[2][2];
-	param.ProjectionMatrix43 = projectionMatrix.Values[2][3];
-	param.ProjectionMatrix34 = projectionMatrix.Values[3][2];
-	param.ProjectionMatrix44 = projectionMatrix.Values[3][3];
-
-	renderer->SetDepth(depthTexture, param);
-}
-
 void GraphicsDX12::SetExternalTexture(int renderId, ExternalTextureType type, void* texture)
 {
-	ID3D12Resource* resource = reinterpret_cast<ID3D12Resource*>(texture);
-	auto backend = EffekseerRendererDX12::CreateTexture(graphicsDevice_, resource);
-	renderSettings[renderId].externalTextures[static_cast<int>(type)] = backend;
+	if (texture != nullptr)
+	{
+		ID3D12Resource* resource = reinterpret_cast<ID3D12Resource*>(texture);
+		auto backend = EffekseerRendererDX12::CreateTexture(graphicsDevice_, resource);
+		renderSettings[renderId].externalTextures[static_cast<int>(type)] = backend;	
+	}
+	else
+	{
+		renderSettings[renderId].externalTextures[static_cast<int>(type)] = nullptr;
+	}
 }
 
 Effekseer::TextureLoaderRef GraphicsDX12::Create(TextureLoaderLoad load, TextureLoaderUnload unload)
